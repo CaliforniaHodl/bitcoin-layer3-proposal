@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Crisis &mdash; Bitcoin Code Archaeology</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <a href="index.html" class="logo">&#x20bf; CODE ARCHAEOLOGY</a>
+    <button class="nav-toggle" aria-label="Toggle navigation">&#9776;</button>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="parable.html">The Parable</a>
+      <a href="archaeology.html">Code Archaeology</a>
+      <a href="crisis.html" class="active">The Crisis</a>
+      <a href="framework.html">The Framework</a>
+      <a href="l3.html">Bitcoin L3</a>
+      <a href="faq.html">FAQ</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="container">
+    <h1>The Crisis</h1>
+    <p class="subtitle">
+      The players, the disappearing anchor, and the threats nobody wrote rules for.
+    </p>
+  </div>
+</div>
+
+<!-- ══════════════════ THE CIVIL WAR ══════════════════ -->
+<section id="civil-war">
+  <div class="container">
+    <h2>The Civil War: Five Ropes, Six Options</h2>
+    <p>
+      This isn't about opinions. The code shows: Satoshi designed a 40-byte data ceiling.
+      SegWit created a 3MB data lane with 75% discount. Taproot removed the last size constraint.
+      <strong>100,000x increase in per-block data capacity, at 75% discount.</strong>
+    </p>
+
+    <!-- Five Ropes SVG Diagram -->
+    <h3>The Five Ropes</h3>
+    <div class="ropes-diagram">
+      <svg class="ropes-svg" viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+        <!-- Ropes (lines) -->
+        <line x1="200" y1="160" x2="200" y2="30" stroke="#f7931a" stroke-width="2" opacity="0.5"/>
+        <line x1="200" y1="160" x2="60" y2="130" stroke="#f7931a" stroke-width="2" opacity="0.5"/>
+        <line x1="200" y1="160" x2="340" y2="130" stroke="#f7931a" stroke-width="2" opacity="0.5"/>
+        <line x1="200" y1="160" x2="100" y2="280" stroke="#f7931a" stroke-width="2" opacity="0.5"/>
+        <line x1="200" y1="160" x2="300" y2="280" stroke="#f7931a" stroke-width="2" opacity="0.5"/>
+        <!-- Center node -->
+        <circle cx="200" cy="160" r="18" fill="#0a0a0f" stroke="#f7931a" stroke-width="2"/>
+        <text x="200" y="164" text-anchor="middle" fill="#f7931a" font-family="sans-serif" font-size="9" font-weight="700">BTC</text>
+        <!-- Merchant -->
+        <circle cx="200" cy="30" r="14" fill="#12121a" stroke="#ff4d4d" stroke-width="2"/>
+        <text x="200" y="34" text-anchor="middle" fill="#ff4d4d" font-family="sans-serif" font-size="8" font-weight="600">M</text>
+        <text x="200" y="7" text-anchor="middle" fill="#c8c8d4" font-family="sans-serif" font-size="10">Merchant</text>
+        <!-- Operator -->
+        <circle cx="60" cy="130" r="14" fill="#12121a" stroke="#4da6ff" stroke-width="2"/>
+        <text x="60" y="134" text-anchor="middle" fill="#4da6ff" font-family="sans-serif" font-size="8" font-weight="600">O</text>
+        <text x="60" y="108" text-anchor="middle" fill="#c8c8d4" font-family="sans-serif" font-size="10">Operator</text>
+        <!-- Miner -->
+        <circle cx="340" cy="130" r="14" fill="#12121a" stroke="#4dff88" stroke-width="2"/>
+        <text x="340" y="134" text-anchor="middle" fill="#4dff88" font-family="sans-serif" font-size="8" font-weight="600">Mi</text>
+        <text x="340" y="108" text-anchor="middle" fill="#c8c8d4" font-family="sans-serif" font-size="10">Miner</text>
+        <!-- Holder -->
+        <circle cx="100" cy="280" r="14" fill="#12121a" stroke="#ffd84d" stroke-width="2"/>
+        <text x="100" y="284" text-anchor="middle" fill="#ffd84d" font-family="sans-serif" font-size="8" font-weight="600">H</text>
+        <text x="100" y="306" text-anchor="middle" fill="#c8c8d4" font-family="sans-serif" font-size="10">Holder</text>
+        <!-- Whale -->
+        <circle cx="300" cy="280" r="14" fill="#12121a" stroke="#a64dff" stroke-width="2"/>
+        <text x="300" y="284" text-anchor="middle" fill="#a64dff" font-family="sans-serif" font-size="8" font-weight="600">W</text>
+        <text x="300" y="306" text-anchor="middle" fill="#c8c8d4" font-family="sans-serif" font-size="10">Whale</text>
+      </svg>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Player</th><th>Wants</th><th>Inscription Impact</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--green)">Miner</td><td>Fees (subsidy halving)</td><td>More fees. Loves them.</td></tr>
+          <tr><td style="color:var(--blue)">Operator</td><td>Low node costs</td><td>Storage bloat. Hates them.</td></tr>
+          <tr><td style="color:var(--red)">Merchant</td><td>Data on Bitcoin</td><td>Their product. Created them.</td></tr>
+          <tr><td style="color:var(--yellow)">Holder</td><td>Number go up</td><td>Activity = price? Ambivalent.</td></tr>
+          <tr><td style="color:var(--purple)">Whale</td><td>Off-chain efficiency</td><td>Irrelevant to harbor model.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Feasibility Tiers</h3>
+
+    <div class="tier">
+      <div class="tier-header t1">Tier 1: No Permission Needed &mdash; Start Now</div>
+      <ol>
+        <li>Code archaeology &mdash; documenting the divergence with receipts</li>
+        <li>Node optimization contributions (pruning, Utreexo research)</li>
+        <li>Anchoring protocol standard (bridge between Bitcoin txs and off-chain data)</li>
+        <li>Education &mdash; website, parable, accessible explanations</li>
+      </ol>
+    </div>
+    <div class="tier">
+      <div class="tier-header t2">Tier 2: Requires Adoption, No Consensus Change</div>
+      <ol start="5">
+        <li>Knots-style filtering in Core (PR to Bitcoin Core, policy only)</li>
+        <li>Creator tools on anchoring protocol</li>
+        <li>L3 prototype (proof of concept for data layer)</li>
+      </ol>
+    </div>
+    <div class="tier">
+      <div class="tier-header t3">Tier 3: Requires Consensus</div>
+      <ol start="8">
+        <li>BIP for <code>MAX_TAPSCRIPT_SIZE</code> (restore script size limit)</li>
+        <li>BIP for witness discount adjustment (reduce discount for non-signature data)</li>
+        <li>BIP for unknown leaf version rejection</li>
+      </ol>
+    </div>
+
+    <blockquote>
+      <strong>The strategy:</strong> Build credibility with Tier 1 &rarr; Gain influence with Tier 2 &rarr; Push Tier 3 from position of strength.
+    </blockquote>
+  </div>
+</section>
+
+<!-- ══════════════════ THE REAL PROBLEM ══════════════════ -->
+<section id="real-problem">
+  <div class="container">
+    <h2>The Real Problem: The Anchor Is Almost Gone</h2>
+    <p>
+      The anchor isn't disappearing in some theoretical future.
+      <strong>Two more halvings and it's functionally gone.</strong>
+      And here's the part nobody in the civil war wants to say out loud:
+    </p>
+
+    <!-- Halving Chart -->
+    <h3>The Halving Countdown</h3>
+    <div class="halving-chart">
+      <div class="halving-bar-row">
+        <span class="halving-year">2024</span>
+        <div class="halving-track">
+          <div class="halving-fill" style="width:100%;background:var(--green)">3.125 BTC</div>
+        </div>
+        <span class="halving-label">$312K/block</span>
+      </div>
+      <div class="halving-bar-row">
+        <span class="halving-year">2028</span>
+        <div class="halving-track">
+          <div class="halving-fill" style="width:50%;background:var(--yellow)">1.5625 BTC</div>
+        </div>
+        <span class="halving-label">$156K/block</span>
+      </div>
+      <div class="halving-bar-row">
+        <span class="halving-year">2032</span>
+        <div class="halving-track">
+          <div class="halving-fill" style="width:25%;background:var(--accent)">0.78 BTC</div>
+        </div>
+        <span class="halving-label">$78K/block</span>
+      </div>
+      <div class="halving-bar-row">
+        <span class="halving-year">2036</span>
+        <div class="halving-track">
+          <div class="halving-fill" style="width:12.5%;background:var(--red)">0.39</div>
+        </div>
+        <span class="halving-label">$39K/block</span>
+      </div>
+    </div>
+    <p style="font-size:0.85rem;color:var(--text-dim);text-align:center;margin-top:0.5rem">
+      At $100K per BTC. Mining operations cost real electricity, real hardware, real facilities.
+    </p>
+
+    <h3>Inscriptions Might Be Keeping the Lights On</h3>
+    <p>
+      Strip away the moral argument. Look at it cold: miner revenue = subsidy + fees.
+      Subsidy is shrinking on a fixed schedule. Fee revenue from normal transactions is inconsistent.
+      Inscription fees have been a meaningful chunk of fee revenue since 2023.
+      Lightning moves transactions off L1, <em>reducing</em> fee pressure.
+    </p>
+    <p>
+      If inscriptions vanished tomorrow&mdash;if you got everything the sound money camp wants&mdash;<strong>what replaces that fee revenue?</strong>
+    </p>
+    <p>Nothing. Not yet. Nobody's designed it.</p>
+
+    <h3>Three Possible Worlds</h3>
+    <div class="card" style="border-left:3px solid var(--yellow)">
+      <h4 style="color:var(--yellow)">World A: Inscriptions Persist</h4>
+      <p>Miners get fee revenue. Nodes bear storage costs. Decentralization degrades slowly. Bitcoin survives but drifts from sound money.</p>
+    </div>
+    <div class="card" style="border-left:3px solid var(--red)">
+      <h4 style="color:var(--red)">World B: Inscriptions Die</h4>
+      <p>Miners lose significant fee revenue. Hash rate drops. Network security degrades. 51% attack cost decreases. Bitcoin becomes vulnerable to state-level attack. <strong>World B is worse than World A.</strong></p>
+    </div>
+    <div class="card" style="border-left:3px solid var(--green)">
+      <h4 style="color:var(--green)">World C: Something Replaces Both</h4>
+      <p>The only world where Bitcoin survives as sound money. Nobody has designed this yet. The clock is running.</p>
+    </div>
+
+    <blockquote>
+      The signal is: <strong>the anchor is almost gone, and there is no plan.</strong>
+      Everything else&mdash;the inscriptions, the L3, the filtering, the civil war&mdash;is noise around the signal.
+      Write the plan.
+    </blockquote>
+  </div>
+</section>
+
+<!-- ══════════════════ FUTURE THREATS ══════════════════ -->
+<section id="threats">
+  <div class="container">
+    <h2>Future Threats: Nation States &amp; AI Agents</h2>
+    <p>
+      The inscription civil war is a dress rehearsal for the real conflict coming in 2032&ndash;2036,
+      when the anchor is a pebble and two new players arrive that nobody wrote rules for.
+    </p>
+
+    <div class="threat-grid">
+      <div class="threat-card">
+        <h4 style="color:var(--red)">Nation-State Actors</h4>
+        <ul>
+          <li><strong>Digital eminent domain</strong> &mdash; state-owned mining, regulatory capture of pools</li>
+          <li><strong>Selective reorgs</strong> &mdash; rewrite last 6 blocks when sanctioned entities move funds</li>
+          <li><strong>Transaction censorship</strong> &mdash; your Bitcoin exists, it just can't move without approval</li>
+          <li>As subsidy &rarr; 0, attack cost drops. A $3B spend is a rounding error in a defense budget.</li>
+        </ul>
+      </div>
+      <div class="threat-card ai">
+        <h4 style="color:var(--purple)">AI Agents</h4>
+        <ul>
+          <li><strong>Fill every cheap byte</strong> &mdash; witness data at 75% discount, operational data not art</li>
+          <li><strong>Out-compete humans</strong> &mdash; millisecond-speed fee optimization</li>
+          <li><strong>Extract MEV</strong> &mdash; front-running, sandwich attacks at machine speed</li>
+          <li>No morals, no values, just one question: <em>is this profitable?</em></li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>The Compound Threat</h3>
+    <div class="code-block">
+      <div class="code-header"><span>Threat Model</span><span class="lang">Analysis</span></div>
+      <pre><code><span class="cm">Low subsidy</span>
+    <span class="op">&rarr;</span> Lower hash rate
+    <span class="op">&rarr;</span> Nation state can afford 51% attack
+    <span class="op">&rarr;</span> <span class="red">State controls what gets confirmed</span>
+
+<span class="kw">PLUS</span>
+
+<span class="cm">AI agents flooding block space</span>
+    <span class="op">&rarr;</span> Fee market becomes machine-vs-machine
+    <span class="op">&rarr;</span> Humans priced out of L1
+    <span class="op">&rarr;</span> <span class="red">Bitcoin becomes AI infrastructure</span>
+
+<span class="kw">COMBINED:</span>
+
+State controls L1 + Humans can't use L1
+    = <span class="red">Bitcoin exists but serves neither sound money nor human sovereignty</span>
+    = An empty shell with "21 million" printed on it</code></pre>
+    </div>
+
+    <blockquote>
+      The inscription debate is about whether humans should store JPEGs on Bitcoin.<br>
+      The real debate&mdash;the one coming in 5&ndash;10 years&mdash;is about whether Bitcoin is still for humans at all.
+    </blockquote>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>
+      <span class="accent">&#x20bf;</span> Bitcoin Code Archaeology
+      &nbsp;&bull;&nbsp;
+      Built from 11 knowledge files, 4 codebases, and the code itself.
+    </p>
+    <p style="margin-top:0.5rem">
+      Source repos: core0.1 &bull; core22 &bull; core30 &bull; knots
+      &nbsp;&bull;&nbsp;
+      The receipts don't lie.
+    </p>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bitcoin L3 &mdash; Bitcoin Code Archaeology</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <a href="index.html" class="logo">&#x20bf; CODE ARCHAEOLOGY</a>
+    <button class="nav-toggle" aria-label="Toggle navigation">&#9776;</button>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="parable.html">The Parable</a>
+      <a href="archaeology.html">Code Archaeology</a>
+      <a href="crisis.html">The Crisis</a>
+      <a href="framework.html">The Framework</a>
+      <a href="l3.html" class="active">Bitcoin L3</a>
+      <a href="faq.html">FAQ</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="container">
+    <h1>Bitcoin L3</h1>
+    <p class="subtitle">
+      A document anchoring layer for Bitcoin. Built, tested, and ready for trusted-network beta.
+    </p>
+  </div>
+</div>
+
+<!-- ══════════════════ STATUS ══════════════════ -->
+<section id="status">
+  <div class="container">
+    <h2>Working Code, Not a Whitepaper</h2>
+    <p>
+      Bitcoin L3 started as a proposal on this site. It's now a <strong>working Python package</strong>
+      with 18 CLI commands, a P2P network, and 4 rounds of adversarial security testing behind it.
+    </p>
+
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-value">18</div>
+        <div class="stat-label">CLI commands</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">287</div>
+        <div class="stat-label">test functions</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">276</div>
+        <div class="stat-label">tests passing</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">43</div>
+        <div class="stat-label">security fixes</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">0</div>
+        <div class="stat-label">critical/high vulns</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">36 B</div>
+        <div class="stat-label">per anchor on L1</div>
+      </div>
+    </div>
+
+    <p style="font-family:var(--font-sans);font-size:0.85rem;color:var(--text-dim);text-align:center;margin-top:0.5rem">
+      v0.1.0 &nbsp;&bull;&nbsp; Python 3.11+ &nbsp;&bull;&nbsp; MIT License &nbsp;&bull;&nbsp; Zero core dependencies
+    </p>
+  </div>
+</section>
+
+<!-- ══════════════════ ARCHITECTURE ══════════════════ -->
+<section id="architecture">
+  <div class="container">
+    <h2>Architecture: Anchors on L1, Data on L3</h2>
+    <p>
+      Bitcoin L3 separates concerns. Documents live off-chain in a content-addressed store with
+      peer-to-peer distribution. Bitcoin L1 holds only a <strong>36-byte anchor</strong> &mdash;
+      a 4-byte protocol prefix and a 32-byte SHA-256 checksum embedded in an OP_RETURN output.
+      The anchor is permanent. The data is portable. L1 proves existence. L3 provides availability.
+    </p>
+
+    <div class="code-block">
+      <div class="code-header"><span>Bitcoin L3 Architecture</span><span class="lang">Design</span></div>
+      <pre><code>    <span class="ty">L1 (Bitcoin)</span>              Bridge              <span class="ty">L3 (Document Layer)</span>
+   +-----------------+    +-------------+    +------------------------+
+   |                 |    |             |    |                        |
+   |  Block N        |    |   36 bytes  |    |  ~/.pfm/l3/store/     |
+   |  +-----------+  |    |             |    |  +------------------+ |
+   |  | OP_RETURN |  |&lt;---|  PFM3 +     |&lt;---|  | &lt;checksum&gt;.pfm   | |
+   |  | PFM3+hash |  |    |  SHA-256    |    |  | &lt;checksum&gt;.pfm   | |
+   |  +-----------+  |    |             |    |  | &lt;checksum&gt;.pfm   | |
+   |                 |    +-------------+    |  +------------------+ |
+   |  Immutable.     |                       |                        |
+   |  36 bytes/doc.  |                       |  P2P sync via Nostr    |
+   |  Proves time.   |                       |  Content-addressed     |
+   |                 |                       |  Cryptographic verify  |
+   +-----------------+                       +------------------------+</code></pre>
+    </div>
+
+    <h3>L1: The Trust Anchor</h3>
+    <p>
+      Bitcoin L1 serves one purpose: <strong>timestamped proof of existence</strong>. For each document,
+      a single OP_RETURN transaction is broadcast containing:
+    </p>
+
+    <div class="code-block">
+      <div class="code-header"><span>On-Chain Anchor Format</span><span class="lang">Protocol</span></div>
+      <pre><code>Script:  <span class="ty">OP_RETURN</span> <span class="ty">OP_PUSH</span>(<span class="num">36</span>) &lt;PFM3&gt; &lt;SHA-256&gt;
+Hex:     <span class="num">6a24 50464d33</span> &lt;64 hex chars&gt;
+Size:    <span class="num">38 bytes</span> scriptPubKey (2 opcode + 36 data)
+Cost:    ~<span class="num">440 sats</span> at 10 sat/vbyte (~$0.40 at $100K/BTC)</code></pre>
+    </div>
+
+    <p>Once confirmed, this anchor provides:</p>
+    <ul style="padding-left:1.5rem;margin-bottom:1.25rem">
+      <li><strong>Proof of existence</strong> &mdash; the document existed at block height N</li>
+      <li><strong>Tamper evidence</strong> &mdash; any modification changes the checksum</li>
+      <li><strong>Non-repudiation</strong> &mdash; the anchor cannot be removed or altered</li>
+      <li><strong>Timestamping</strong> &mdash; block timestamp provides approximate dating</li>
+    </ul>
+
+    <h3>L3: The Document Layer</h3>
+    <p>All document data lives on L3:</p>
+    <ul style="padding-left:1.5rem;margin-bottom:1.25rem">
+      <li><strong>Local store</strong> &mdash; content-addressed filesystem at <code>~/.pfm/l3/store/</code></li>
+      <li><strong>Index</strong> &mdash; <code>index.json</code> maps checksums to metadata (txid, network, timestamps)</li>
+      <li><strong>P2P network</strong> &mdash; nodes discover each other via Nostr relays and exchange documents</li>
+      <li><strong>PFM format</strong> &mdash; a purpose-built container format with cryptographic integrity</li>
+    </ul>
+
+    <blockquote>
+      L3 is where the data lives. L1 is where the proof lives. The bridge between them is a 36-byte OP_RETURN.
+    </blockquote>
+  </div>
+</section>
+
+<!-- ══════════════════ PFM FORMAT ══════════════════ -->
+<section id="pfm-format">
+  <div class="container">
+    <h2>The PFM Container Format</h2>
+    <p>
+      PFM (Pure Fucking Magic) is a section-based document container designed for content-addressed storage.
+    </p>
+
+    <div class="code-block">
+      <div class="code-header"><span>PFM Document Structure</span><span class="lang">Format</span></div>
+      <pre><code><span class="ty">#!PFM/1.0</span>
+<span class="ty">#@meta</span>
+id: a1b2c3d4-...
+agent: my-application
+created: 2026-02-24T12:00:00Z
+checksum: sha256:&lt;hex&gt;
+<span class="ty">#@index</span>
+content <span class="num">247</span> <span class="num">1024</span>
+attachment <span class="num">1271</span> <span class="num">8192</span>
+<span class="ty">#@content</span>
+The actual document content goes here.
+<span class="ty">#@attachment</span>
+&lt;binary or text data&gt;
+<span class="ty">#!END</span></code></pre>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Property</th><th>Mechanism</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Identity</strong></td><td>SHA-256 checksum of all section content</td></tr>
+          <tr><td><strong>Integrity</strong></td><td>Checksum embedded in metadata, verified on read</td></tr>
+          <tr><td><strong>Deduplication</strong></td><td>Content-addressed &mdash; identical content = identical checksum</td></tr>
+          <tr><td><strong>Lazy I/O</strong></td><td>Byte-offset index enables O(1) section access without reading entire file</td></tr>
+          <tr><td><strong>Portability</strong></td><td>Text-based format with escape sequences for binary safety</td></tr>
+          <tr><td><strong>Size limits</strong></td><td>100 MB max file, 10,000 max sections</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ P2P NETWORK ══════════════════ -->
+<section id="p2p-network">
+  <div class="container">
+    <h2>P2P Document Network</h2>
+    <p>
+      Documents are useless if they can't be found. Bitcoin L3 includes a peer-to-peer network
+      for document discovery and exchange.
+    </p>
+
+    <h3>Peer Discovery via Nostr</h3>
+    <p>
+      Nodes publish their TCP address to Nostr relays as application-specific events
+      (kind 30078, d-tag <code>pfm3-node</code>). Other nodes subscribe and connect directly over TCP.
+      No custom discovery infrastructure. Same secp256k1 curve as Bitcoin.
+    </p>
+
+    <h3>Wire Protocol</h3>
+    <div class="code-block">
+      <div class="code-header"><span>Binary Framing</span><span class="lang">Protocol</span></div>
+      <pre><code>[<span class="num">4 bytes</span>: <span class="str">"PFM3"</span>]  [<span class="num">4 bytes</span>: payload length]  [JSON payload]</code></pre>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Message</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td>HANDSHAKE / HANDSHAKE_ACK</td><td>Identity exchange + challenge-response auth</td></tr>
+          <tr><td>PING / PONG</td><td>Keepalive (30s interval, 90s timeout)</td></tr>
+          <tr><td>INV</td><td>"I have these checksums"</td></tr>
+          <tr><td>WANT</td><td>"Send me this document"</td></tr>
+          <tr><td>DATA</td><td>Document bytes (base64 in JSON)</td></tr>
+          <tr><td>ANCHOR_ANN</td><td>"This checksum was anchored in this txid"</td></tr>
+          <tr><td>NOT_FOUND</td><td>"I don't have that document"</td></tr>
+          <tr><td>PEERS_REQ / PEERS_RES</td><td>Peer exchange</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Sync Cycle</h3>
+    <div class="code-block">
+      <div class="code-header"><span>Document Exchange</span><span class="lang">Protocol</span></div>
+      <pre><code>Node A                          Node B
+  |                                |
+  |-------- <span class="fn">INV</span> [checksums] ------&gt;|
+  |                                |  (checks local store)
+  |&lt;------- <span class="fn">WANT</span> [checksum] ------|
+  |                                |
+  |-------- <span class="fn">DATA</span> [document] ------&gt;|
+  |                                |  (validates checksum)
+  |                                |  (stores document)</code></pre>
+    </div>
+
+    <h3>Authentication</h3>
+    <p>
+      Every connection begins with a challenge-response handshake. Both sides exchange random 32-byte
+      challenges, each signs the peer's challenge with their secp256k1 private key, and the connection
+      is established only if both signatures verify. No anonymous connections.
+    </p>
+
+    <h3>Progressive Disclosure</h3>
+    <p>New peers receive limited inventory to prevent store exfiltration by Sybil attackers:</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Trust Score</th><th>Checksums Disclosed</th></tr></thead>
+        <tbody>
+          <tr><td>New (score &le; 1.0)</td><td>10</td></tr>
+          <tr><td>Known (1.0 &lt; score &le; 5.0)</td><td>100</td></tr>
+          <tr><td>Trusted (score &gt; 5.0)</td><td>Full inventory</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ SECURITY ══════════════════ -->
+<section id="security">
+  <div class="container">
+    <h2>Security: 4 Rounds of Adversarial Testing</h2>
+    <p>
+      Bitcoin L3 has been through four rounds of adversarial security testing &mdash; a structured
+      red-team/black-team cycle where attack agents attempt to exploit the system and defense agents
+      fix what's found.
+    </p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Round</th><th>Findings Fixed</th><th>Severity</th></tr></thead>
+        <tbody>
+          <tr><td>Round 1</td><td>7</td><td style="color:var(--red)">7 CRITICAL</td></tr>
+          <tr><td>Round 2</td><td>16</td><td style="color:var(--yellow)">3 HIGH, 9 MEDIUM, 4 LOW</td></tr>
+          <tr><td>Round 3</td><td>13</td><td style="color:var(--blue)">13 MEDIUM/LOW</td></tr>
+          <tr><td>Round 4</td><td>7</td><td style="color:var(--green)">3 MEDIUM, 4 LOW</td></tr>
+          <tr><td><strong>Total</strong></td><td><strong>43</strong></td><td><strong style="color:var(--green)">0 CRITICAL/HIGH remaining</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Key Defenses</h3>
+    <div class="threat-grid">
+      <div class="threat-card" style="border-top-color:var(--green)">
+        <h4 style="color:var(--green)">Anti-Amplification</h4>
+        <ul>
+          <li>Per-peer WANT rate limit: 10/sec</li>
+          <li>Per-peer outbound bandwidth cap: 2 MB/sec</li>
+          <li>Per-message-type rate limits</li>
+        </ul>
+      </div>
+      <div class="threat-card" style="border-top-color:var(--blue)">
+        <h4 style="color:var(--blue)">Anti-Sybil</h4>
+        <ul>
+          <li>Per-IP inbound connection limit: 2/IP</li>
+          <li>Per-peer pending wants cap: 1,000</li>
+          <li>IPv4-mapped IPv6 normalization</li>
+          <li>Progressive inventory disclosure</li>
+        </ul>
+      </div>
+      <div class="threat-card" style="border-top-color:var(--yellow)">
+        <h4 style="color:var(--yellow)">Anti-Injection</h4>
+        <ul>
+          <li>DATA source validation</li>
+          <li>NOT_FOUND source validation</li>
+          <li>Anchor overwrite protection</li>
+          <li>Unsolicited DATA rejection</li>
+        </ul>
+      </div>
+      <div class="threat-card" style="border-top-color:var(--accent)">
+        <h4 style="color:var(--accent)">Architectural Firewall</h4>
+        <ul>
+          <li>No P2P message handler can trigger a Bitcoin RPC call</li>
+          <li>P2P layer and RPC layer not wired at runtime</li>
+          <li>Anchor verification injectable only at construction time</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Certification</h3>
+    <p>
+      The system is certified for <strong>trusted-network beta deployment</strong>.
+      Remaining items for public internet deployment:
+    </p>
+    <ul style="padding-left:1.5rem;margin-bottom:1.25rem">
+      <li>TLS encryption on TCP connections</li>
+      <li>Handshake channel binding (MITM prevention)</li>
+      <li>Node key encryption at rest</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ══════════════════ VEILCLOUD ══════════════════ -->
+<section id="veilcloud">
+  <div class="container">
+    <h2>VeilCloud: Privacy Primitives for L3</h2>
+    <p>
+      VeilCloud provides <strong>native Python</strong> privacy primitives built directly into Bitcoin L3.
+      Client-side encryption, threshold crypto, Merkle audit trails,
+      and privacy-preserving credentials &mdash; all built-in, zero external services.
+    </p>
+
+    <div class="threat-grid">
+      <div class="threat-card" style="border-top-color:var(--green)">
+        <h4 style="color:var(--green)">Client-Side Encryption</h4>
+        <ul>
+          <li>AES-256-GCM &mdash; server never sees plaintext</li>
+          <li>PBKDF2-HMAC-SHA256 key derivation (600K iterations)</li>
+          <li>Best-effort key zeroing after use</li>
+          <li><code>l3 veilcloud encrypt/decrypt</code></li>
+        </ul>
+      </div>
+      <div class="threat-card" style="border-top-color:var(--blue)">
+        <h4 style="color:var(--blue)">Threshold Key Management</h4>
+        <ul>
+          <li>Shamir&rsquo;s Secret Sharing over GF(256)</li>
+          <li>Same field as AES (Rijndael polynomial)</li>
+          <li>t-of-n: any t shares recover the key, fewer reveal nothing</li>
+          <li><code>l3 veilcloud split-key/combine-key</code></li>
+        </ul>
+      </div>
+      <div class="threat-card" style="border-top-color:var(--accent)">
+        <h4 style="color:var(--accent)">Merkle Batch Anchoring</h4>
+        <ul>
+          <li>Anchor thousands of documents in a single transaction</li>
+          <li>Domain-separated hashing (prevents second-preimage)</li>
+          <li>Inclusion proofs for any document in the batch</li>
+          <li><code>POST /batch-anchor</code> + <code>GET /merkle-proof</code></li>
+        </ul>
+      </div>
+      <div class="threat-card" style="border-top-color:var(--yellow)">
+        <h4 style="color:var(--yellow)">Audit &amp; Access Control</h4>
+        <ul>
+          <li>Append-only hash-chained audit logs</li>
+          <li>Merkle proofs over audit entries</li>
+          <li>HMAC-signed credentials with expiry + revocation</li>
+          <li>Permission bitfield: READ, WRITE, DELETE, SHARE, ADMIN</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span>Batch Anchoring Flow</span><span class="lang">Protocol</span></div>
+      <pre><code><span class="fn">1. COLLECT</span>    N checksums from L3 store
+<span class="fn">2. BUILD</span>      MerkleTree.from_checksums(checksums)
+<span class="fn">3. ANCHOR</span>     Single OP_RETURN with Merkle root (<span class="num">36 bytes</span>)
+<span class="fn">4. PROVE</span>      tree.get_proof(index) &rarr; inclusion proof for any document
+<span class="fn">5. VERIFY</span>     verify_proof(proof) + verify anchor on L1
+
+<span class="ty">Result:</span>
+  1,000 documents anchored in <span class="num">1 transaction</span>
+  Cost: ~<span class="num">440 sats</span> total (not per document)
+  Each document independently provable via Merkle inclusion proof</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ GETTING STARTED ══════════════════ -->
+<section id="getting-started">
+  <div class="container">
+    <h2>Getting Started</h2>
+
+    <h3>Install</h3>
+    <div class="code-block">
+      <div class="code-header"><span>Install</span><span class="lang">bash</span></div>
+      <pre><code><span class="cm"># Core package</span>
+pip install -e .
+
+<span class="cm"># With P2P networking</span>
+pip install -e <span class="str">".[p2p]"</span>
+
+<span class="cm"># With VeilCloud privacy primitives</span>
+pip install -e <span class="str">".[veilcloud]"</span></code></pre>
+    </div>
+
+    <h3>Store &amp; Anchor a Document</h3>
+    <div class="code-block">
+      <div class="code-header"><span>Basic Usage</span><span class="lang">bash</span></div>
+      <pre><code><span class="cm"># Store a document in L3</span>
+l3 store document.pfm
+<span class="cm"># Stored document.pfm in L3</span>
+<span class="cm">#   checksum: a1b2c3d4e5f6...</span>
+
+<span class="cm"># Anchor to Bitcoin (requires running Bitcoin node)</span>
+l3 anchor document.pfm \
+  --rpc-url http://127.0.0.1:18332 \
+  --rpc-cookie ~/.bitcoin/testnet3/.cookie
+
+<span class="cm"># Verify on-chain</span>
+l3 verify-anchor document.pfm --rpc-url http://127.0.0.1:18332
+<span class="cm"># OK: document.pfm anchor verified on testnet</span></code></pre>
+    </div>
+
+    <h3>Start a P2P Node</h3>
+    <div class="code-block">
+      <div class="code-header"><span>P2P Node</span><span class="lang">bash</span></div>
+      <pre><code>l3 node start
+<span class="cm"># L3 Node started</span>
+<span class="cm">#   pubkey: 03a1b2c3d4...</span>
+<span class="cm">#   listen: 127.0.0.1:9735</span>
+<span class="cm">#   store:  12 documents</span>
+<span class="cm">#   relays: 3</span>
+
+<span class="cm"># Add a peer manually</span>
+l3 node add-peer 203.0.113.10:9735
+
+<span class="cm"># Fetch a document from the network</span>
+l3 fetch a1b2c3d4e5f6a7b8...  <span class="cm"># 64-char SHA-256 checksum</span></code></pre>
+    </div>
+
+    <h3>CLI Reference</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Command</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>l3 store &lt;file&gt;</code></td><td>Store a .pfm file in the local content-addressed store</td></tr>
+          <tr><td><code>l3 get &lt;checksum&gt;</code></td><td>Retrieve a document from the store by checksum</td></tr>
+          <tr><td><code>l3 list</code></td><td>List all documents in the store</td></tr>
+          <tr><td><code>l3 anchor &lt;file&gt;</code></td><td>Anchor a document's checksum to Bitcoin via OP_RETURN</td></tr>
+          <tr><td><code>l3 verify-anchor &lt;file&gt;</code></td><td>Verify the on-chain anchor matches the document</td></tr>
+          <tr><td><code>l3 import &lt;txid&gt;</code></td><td>Look up a PFM anchor on-chain by transaction ID</td></tr>
+          <tr><td><code>l3 node start</code></td><td>Start the P2P node (foreground)</td></tr>
+          <tr><td><code>l3 node status</code></td><td>Show node identity and config</td></tr>
+          <tr><td><code>l3 node peers</code></td><td>List known peers</td></tr>
+          <tr><td><code>l3 node add-peer</code></td><td>Manually add a peer</td></tr>
+          <tr><td><code>l3 fetch &lt;checksum&gt;</code></td><td>Fetch a document from the P2P network</td></tr>
+          <tr><td><code>l3 veilcloud encrypt &lt;file&gt;</code></td><td>Encrypt a file (AES-256-GCM, password prompt)</td></tr>
+          <tr><td><code>l3 veilcloud decrypt &lt;file&gt;</code></td><td>Decrypt an encrypted file</td></tr>
+          <tr><td><code>l3 veilcloud split-key</code></td><td>Split a key into Shamir shares</td></tr>
+          <tr><td><code>l3 veilcloud combine-key</code></td><td>Combine shares to recover a key</td></tr>
+          <tr><td><code>l3 veilcloud merkle-root</code></td><td>Compute Merkle root from checksums</td></tr>
+          <tr><td><code>l3 veilcloud audit</code></td><td>Audit trail operations (log, verify, proof)</td></tr>
+          <tr><td><code>l3 veilcloud credential</code></td><td>Access control (issue, verify, revoke)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Technical Specifications</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Protocol prefix</td><td><code>PFM3</code> (0x50464d33)</td></tr>
+          <tr><td>Anchor size</td><td>36 bytes (4 prefix + 32 SHA-256)</td></tr>
+          <tr><td>On-chain script</td><td><code>OP_RETURN OP_PUSH(36) &lt;data&gt;</code></td></tr>
+          <tr><td>Hash algorithm</td><td>SHA-256</td></tr>
+          <tr><td>P2P port</td><td>9735</td></tr>
+          <tr><td>Max document size</td><td>100 MB</td></tr>
+          <tr><td>Handshake auth</td><td>secp256k1 Schnorr challenge-response</td></tr>
+          <tr><td>Peer discovery</td><td>Nostr kind 30078, d-tag <code>pfm3-node</code></td></tr>
+          <tr><td>Python</td><td>&ge; 3.11</td></tr>
+          <tr><td>Core dependencies</td><td>None (stdlib only)</td></tr>
+          <tr><td>P2P dependencies</td><td>websockets &ge; 12.0, secp256k1</td></tr>
+          <tr><td>VeilCloud encryption</td><td>AES-256-GCM + PBKDF2-HMAC-SHA256 (600K iterations)</td></tr>
+          <tr><td>VeilCloud threshold</td><td>Shamir SSS over GF(256), max 255 shares</td></tr>
+          <tr><td>VeilCloud dependencies</td><td>cryptography &ge; 41.0 (optional)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ STRATEGY ══════════════════ -->
+<section id="strategy">
+  <div class="container">
+    <h2>The Strategic Vision</h2>
+    <p>
+      L3 isn't just software. It's an answer to the inscription civil war &mdash; a way to give
+      data users what they want without forcing every full node to store their files forever.
+    </p>
+
+    <h3>The Core Question</h3>
+    <p><strong>Does L3 need L1 changes to win?</strong></p>
+
+    <div class="card" style="border-left:3px solid var(--blue)">
+      <h4 style="color:var(--blue)">Option A: Don't Fight L1</h4>
+      <p>Accept inscriptions exist. Build L3 as alternative. No political battle. No enemies. Ship faster.</p>
+      <p class="tradeoff" style="font-size:0.88rem">
+        <span class="gain">Wins if:</span> L3 adoption high enough that inscriptions become niche.<br>
+        <span class="give-up">Fails if:</span> People prefer L1 for "true immutability" status.
+      </p>
+    </div>
+    <div class="card" style="border-left:3px solid var(--green)">
+      <h4 style="color:var(--green)">Option B: Win on Economics</h4>
+      <p>Make L3 10x cheaper and better. Inscriptions die from irrelevance, not restriction.</p>
+      <p class="tradeoff" style="font-size:0.88rem">
+        <span class="gain">Wins if:</span> Cost difference is significant and UX is equal or better.<br>
+        <span class="give-up">Fails if:</span> "On-chain" has status that "anchored" doesn't.
+      </p>
+    </div>
+    <div class="card" style="border-left:3px solid var(--accent)">
+      <h4 style="color:var(--accent)">Option C: Full Plan (L3 + L1 Changes)</h4>
+      <p>Build L3, then push for witness restrictions via BIP. Belt and suspenders.</p>
+      <p class="tradeoff" style="font-size:0.88rem">
+        <span class="gain">Wins if:</span> L3 works AND L1 restrictions pass.<br>
+        <span class="give-up">Fails if:</span> L3 works but L1 never changes. Political effort wasted.
+      </p>
+    </div>
+
+    <h3>The Key Cultural Question</h3>
+    <blockquote>
+      "I inscribed my art on Bitcoin" = status.<br>
+      "I anchored my art to Bitcoin" = ???<br><br>
+      If the market sees these as equivalent &rarr; L3 wins on cost.<br>
+      If "inscribed" has magic status &rarr; L3 is second-class forever.<br><br>
+      <strong>This might be the whole game.</strong>
+    </blockquote>
+
+    <h3>The Reframe</h3>
+    <p>L3 offers things L1 <em>can't</em>:</p>
+    <ul style="padding-left:1.5rem;margin-bottom:1.25rem">
+      <li><strong>Larger files</strong> &mdash; L1 has limits, L3 doesn't</li>
+      <li><strong>Updateable metadata</strong> &mdash; L1 is frozen, L3 allows revisions with new anchors</li>
+      <li><strong>Collections/galleries</strong> &mdash; L3 could have native organization</li>
+      <li><strong>Search/discovery</strong> &mdash; L3 could index, L1 can't</li>
+      <li><strong>Cheaper minting</strong> &mdash; Artists could afford more</li>
+    </ul>
+    <blockquote>
+      Don't build L3 as "the thing we need before we can fix L1."<br>
+      Build L3 as <strong>"the thing that makes L1 inscriptions look stupid."</strong><br><br>
+      If L3 wins on merit, L1 changes become obvious.<br>
+      If L3 doesn't win on merit, L1 changes wouldn't have saved it anyway.
+    </blockquote>
+
+    <hr>
+
+    <h3>The Four-Way Debate</h3>
+    <p>Four adversarial positions stress-testing the strategy:</p>
+
+    <div class="card" style="border-left:3px solid var(--blue)">
+      <h4 style="color:var(--blue)">Option A: "Build Arks, Not Die on Hills"</h4>
+      <p style="font-size:0.92rem;color:var(--text-dim)">
+        "Satoshi didn't petition banks to change. He built an alternative. Fighting L1 is fighting
+        physics&mdash;miners follow incentives, always will."
+      </p>
+      <p style="font-size:0.92rem"><em>"We don't preserve ideals by dying on hills. We preserve them by building arks."</em></p>
+    </div>
+    <div class="card" style="border-left:3px solid var(--green)">
+      <h4 style="color:var(--green)">Option B: "Pick the Weapon That Works"</h4>
+      <p style="font-size:0.92rem;color:var(--text-dim)">
+        "We didn't end child labor through moral awakening&mdash;we made it economically obsolete.
+        By making inscriptions economically irrational, we defend the vision with the same tool that
+        created it: superior incentive design."
+      </p>
+      <p style="font-size:0.92rem"><em>"Moral outrage without viable strategy is just screaming at the tide."</em></p>
+    </div>
+    <div class="card" style="border-left:3px solid var(--accent)">
+      <h4 style="color:var(--accent)">Option C: "The Only Answer That Doesn't Turn Its Back"</h4>
+      <p style="font-size:0.92rem;color:var(--text-dim)">
+        "Building an L3 while surrendering L1 is building a lifeboat while the ship burns&mdash;and
+        pretending that's victory. L3 provides the carrot. Witness restrictions provide the stick.
+        Neither alone is complete."
+      </p>
+      <p style="font-size:0.92rem"><em>"Build the L3. Fight for L1. Accept nothing less."</em></p>
+    </div>
+    <div class="card" style="border-left:3px solid var(--red)">
+      <h4 style="color:var(--red)">The Skeptic: "Noble Cause. Poor Odds."</h4>
+      <p style="font-size:0.92rem;color:var(--text-dim)">
+        "History is brutally clear: moral arguments lose to money. 'Should' has never beaten 'profitable'
+        at scale. The system has momentum measured in hundreds of billions of dollars. Your life has
+        finite years. The asymmetry is severe."
+      </p>
+      <p style="font-size:0.92rem"><em>"Are you fighting because you can win, or because you need to have fought?"</em></p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ ROADMAP ══════════════════ -->
+<section id="roadmap">
+  <div class="container">
+    <h2>What's Built vs What's Next</h2>
+
+    <div class="phase-grid">
+      <div class="phase-card">
+        <div class="phase-label">BUILT &bull; v0.1.0</div>
+        <h4 style="color:var(--green)">Working System</h4>
+        <ul>
+          <li>PFM container format with cryptographic integrity</li>
+          <li>Content-addressed local store</li>
+          <li>Bitcoin anchoring via OP_RETURN (36 bytes per document)</li>
+          <li>P2P network with Nostr discovery</li>
+          <li>Challenge-response authentication (secp256k1 Schnorr)</li>
+          <li>INV/WANT/DATA sync cycle</li>
+          <li>4 rounds of adversarial security testing (43 fixes)</li>
+          <li>287 test functions, 276 passing</li>
+          <li>18 CLI commands</li>
+          <li>Zero core dependencies (stdlib only)</li>
+        </ul>
+      </div>
+      <div class="phase-card">
+        <div class="phase-label">BUILT &bull; v0.1.0</div>
+        <h4 style="color:var(--green)">VeilCloud Privacy Primitives</h4>
+        <ul>
+          <li>AES-256-GCM client-side encryption &mdash; server never sees plaintext</li>
+          <li>PBKDF2 key derivation (600K iterations, OWASP 2023)</li>
+          <li>Shamir&rsquo;s Secret Sharing over GF(256) &mdash; t-of-n threshold key management</li>
+          <li>Merkle tree construction + inclusion proofs &mdash; batch anchoring ready</li>
+          <li>Append-only hash-chained audit logs with Merkle proofs</li>
+          <li>HMAC-signed credentials with permissions, expiry, revocation</li>
+          <li>Batch anchor API: <code>POST /batch-anchor</code>, <code>GET /merkle-proof</code></li>
+          <li>74 dedicated tests, all passing</li>
+        </ul>
+      </div>
+      <div class="phase-card">
+        <div class="phase-label">NEXT &bull; v0.2</div>
+        <h4 style="color:var(--yellow)">Near-Term</h4>
+        <ul>
+          <li>Automatic anchoring &mdash; node anchors documents as they arrive via P2P</li>
+          <li>Batch anchoring &mdash; multiple checksums per tx using Merkle trees</li>
+          <li>Anchor verification daemon &mdash; background verification</li>
+          <li>Minimal L1 build &mdash; Bitcoin Finney (stripped Knots: daemon + RPC only)</li>
+        </ul>
+      </div>
+      <div class="phase-card">
+        <div class="phase-label">NEXT &bull; v0.3</div>
+        <h4 style="color:var(--yellow)">Public Internet</h4>
+        <ul>
+          <li>TLS on P2P connections &mdash; required for public internet deployment</li>
+          <li>Handshake channel binding (MITM prevention)</li>
+          <li>Node key encryption at rest</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Content Accountability: The Channel Model</h3>
+    <p>
+      L1 inscriptions have a fatal flaw: illegal content stored on-chain lives in every full node
+      forever, with no way to remove it. L3 solves this the same way Lightning solves payments &mdash;
+      <strong>nothing hits L1 except a settlement hash.</strong>
+    </p>
+
+    <div class="code-block">
+      <div class="code-header"><span>L1 vs L3 Content Model</span><span class="lang">Comparison</span></div>
+      <pre><code><span class="ty">L1 Inscriptions:</span>
+  Content &rarr; embedded in witness data &rarr; <span class="red">every full node stores it forever</span>
+  Removal? <span class="red">Impossible.</span> It's in the chain.
+
+<span class="ty">L3 Anchoring:</span>
+  Content &rarr; L3 node store (off-chain) &rarr; <span class="green">nodes choose what to store</span>
+  L1 gets: <span class="num">36-byte hash only</span> (reveals nothing about content)
+  Removal? <span class="green">L3 nodes drop it. Hash on L1 becomes a dead pointer.</span></code></pre>
+    </div>
+
+    <h4>Built-in Accountability via Bitcoin Address</h4>
+    <p>
+      Every anchor transaction has a <strong>funding address</strong>. That address is public, timestamped,
+      and permanent on L1. This creates an audit trail that L1 inscriptions lack:
+    </p>
+
+    <div class="code-block">
+      <div class="code-header"><span>Accountability Chain</span><span class="lang">Trace</span></div>
+      <pre><code><span class="fn">Illegal content detected on L3</span>
+    &rarr; checksum known
+    &rarr; anchor txid found in L3 index
+    &rarr; anchor tx has a <span class="accent">funding Bitcoin address</span>
+    &rarr; address traced to exchange / KYC endpoint
+    &rarr; <span class="accent">identity of the person who anchored</span>
+
+<span class="ty">Result:</span>
+  Content removed from L3 nodes (operator choice)
+  Anchor hash remains on L1 (meaningless without data)
+  Funding address is <span class="red">permanently linked to the act</span>
+  Better accountability than L1 inscriptions, where content is anonymous AND irremovable</code></pre>
+    </div>
+
+    <div class="threat-grid">
+      <div class="threat-card" style="border-top-color:var(--green)">
+        <h4 style="color:var(--green)">What L3 Nodes Control</h4>
+        <ul>
+          <li>Store/don't store &mdash; every node chooses what content to hold</li>
+          <li>Relay/don't relay &mdash; nodes can refuse to propagate specific checksums</li>
+          <li>Blocklists &mdash; community-maintained lists, like email spam filters</li>
+          <li>No content ever touches L1 &mdash; the hash is just a number</li>
+        </ul>
+      </div>
+      <div class="threat-card" style="border-top-color:var(--accent)">
+        <h4 style="color:var(--accent)">What L1 Provides</h4>
+        <ul>
+          <li>Anchor address = permanent record of who anchored what</li>
+          <li>Timestamp = when it happened</li>
+          <li>Hash = cryptographic link (but reveals zero content)</li>
+          <li>The chain of custody is <strong>better</strong> than inscriptions</li>
+        </ul>
+      </div>
+    </div>
+
+    <blockquote>
+      L1 inscriptions: content is irremovable, uploader is anonymous.<br>
+      L3 anchoring: content is removable, uploader is traceable.<br><br>
+      <strong>The Lightning model applied to data: off-chain until settlement, and even at settlement only a hash hits the chain.</strong>
+    </blockquote>
+
+    <h3>Node Content Policies: Opt-In by Category</h3>
+    <p>
+      Not every node stores everything. L3 node operators <strong>choose what categories of content
+      they accept</strong>, the same way you choose what apps to install on your phone.
+    </p>
+
+    <div class="code-block">
+      <div class="code-header"><span>~/.pfm/l3/node.toml</span><span class="lang">Config</span></div>
+      <pre><code><span class="cm"># Node content policy — operator chooses what to store and relay</span>
+
+<span class="ty">[content_policy]</span>
+accept = [<span class="str">"legal"</span>, <span class="str">"record"</span>]     <span class="cm"># only store these categories</span>
+reject = [<span class="str">"*"</span>]                     <span class="cm"># reject everything else</span>
+max_document_size = <span class="str">"50MB"</span>         <span class="cm"># per-document cap</span>
+require_category = <span class="num">true</span>            <span class="cm"># reject untagged documents</span></code></pre>
+    </div>
+
+    <p>Different nodes, different purposes:</p>
+    <div class="threat-grid">
+      <div class="threat-card" style="border-top-color:var(--blue)">
+        <h4 style="color:var(--blue)">Legal Archive Node</h4>
+        <ul>
+          <li>Accepts: <code>legal</code>, <code>record</code></li>
+          <li>Wills, contracts, deeds, corporate filings</li>
+          <li>Run by: law firms, notary services, estate planners</li>
+          <li>Business model: paid archival service</li>
+        </ul>
+      </div>
+      <div class="threat-card" style="border-top-color:var(--purple)">
+        <h4 style="color:var(--purple)">Art &amp; Media Node</h4>
+        <ul>
+          <li>Accepts: <code>art</code>, <code>media</code>, <code>nft</code></li>
+          <li>Photography, music, digital art, collections</li>
+          <li>Run by: artists, galleries, NFT platforms</li>
+          <li>Business model: hosting + discovery</li>
+        </ul>
+      </div>
+      <div class="threat-card" style="border-top-color:var(--green)">
+        <h4 style="color:var(--green)">Personal Storage Node</h4>
+        <ul>
+          <li>Accepts: <code>personal</code>, <code>media</code></li>
+          <li>Family photos, personal records, memories</li>
+          <li>Run by: individuals, families</li>
+          <li>Business model: none &mdash; you run it because it's yours</li>
+        </ul>
+      </div>
+      <div class="threat-card" style="border-top-color:var(--accent)">
+        <h4 style="color:var(--accent)">General Purpose Node</h4>
+        <ul>
+          <li>Accepts: everything (or broad categories)</li>
+          <li>Public archive, research data, open records</li>
+          <li>Run by: archivists, researchers, enthusiasts</li>
+          <li>Business model: community service, grants, donations</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Report &amp; Delete Workflow</h3>
+    <div class="code-block">
+      <div class="code-header"><span>Content Flagging</span><span class="lang">Workflow</span></div>
+      <pre><code><span class="fn">1. FLAG</span>     Any node operator flags a checksum
+<span class="fn">2. REVIEW</span>   Each node operator reviews flagged content independently
+<span class="fn">3. DELETE</span>   Operator removes content from their store: <span class="accent">l3 delete &lt;checksum&gt;</span>
+<span class="fn">4. RELAY</span>    Flag propagates to peers &mdash; each peer makes their own decision
+<span class="fn">5. TRACE</span>    Anchor tx on L1 links checksum &rarr; funding address &rarr; identity
+
+<span class="ty">Result:</span>
+  Content gone from L3 (every node that agreed to delete)
+  Hash on L1 = dead pointer (proves nothing without the data)
+  Uploader traceable via anchor address
+  <span class="accent">No central authority decided. Every node chose independently.</span></code></pre>
+    </div>
+
+    <h3>Why People Run Nodes</h3>
+    <p>
+      The same reason people run Bitcoin full nodes: <strong>because they want to use the network.</strong>
+    </p>
+    <p>
+      Nobody pays you to run a Bitcoin node. You run it because you need it. L3 is the same.
+      Want to anchor legal documents? Run a node. Want to host your art? Run a node. Want a
+      family photo archive with Bitcoin-grade proof of existence? Run a node.
+    </p>
+    <p>
+      Two nodes find each other via Nostr. They mesh. Now there's redundancy. That's it.
+      The incentive is using the thing. The network grows because people need what it does.
+    </p>
+
+    <blockquote>
+      Bitcoin is the most secure timestamping system ever created. Using it to store data is like using
+      a bank vault to hold Post-it notes &mdash; it works, but it wastes the vault's capacity and makes
+      everyone's safe deposit box more expensive.<br><br>
+      <strong>36 bytes per document. Permanent proof. Zero bloat.</strong>
+    </blockquote>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>
+      <span class="accent">&#x20bf;</span> Bitcoin Code Archaeology
+      &nbsp;&bull;&nbsp;
+      Built from 11 knowledge files, 4 codebases, and the code itself.
+    </p>
+    <p style="margin-top:0.5rem">
+      Bitcoin L3 is open source under the MIT license &nbsp;&bull;&nbsp; 2026
+    </p>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>

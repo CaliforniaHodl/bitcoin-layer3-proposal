@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FAQ &mdash; Bitcoin Code Archaeology</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <a href="index.html" class="logo">&#x20bf; CODE ARCHAEOLOGY</a>
+    <button class="nav-toggle" aria-label="Toggle navigation">&#9776;</button>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="parable.html">The Parable</a>
+      <a href="archaeology.html">Code Archaeology</a>
+      <a href="crisis.html">The Crisis</a>
+      <a href="framework.html">The Framework</a>
+      <a href="l3.html">Bitcoin L3</a>
+      <a href="faq.html" class="active">FAQ</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="container">
+    <h1>Hard Questions, Honest Answers</h1>
+    <p class="subtitle">
+      The answers come from the code, not from ideology.
+    </p>
+  </div>
+</div>
+
+<section>
+  <div class="container">
+
+    <div class="faq-item">
+      <div class="faq-q">
+        <span>How far did Core 30 drift from Satoshi's blueprint?</span>
+        <span class="arrow">&#x25BE;</span>
+      </div>
+      <div class="faq-a">
+        <p>
+          <strong>Massively</strong> in one specific dimension: data capacity.
+          100,000x increase from ~40 bytes to ~4,000,000 bytes per block, at a 75% discount,
+          with no content validation. The blueprint said "scalpel." Core 30 says "fire hose."
+        </p>
+        <p>
+          Three compound changes: SegWit's witness discount (2017), Taproot's script size exemption (2021),
+          and unknown leaf version acceptance (2021). Each reasonable alone. Together they built the inscription highway.
+        </p>
+        <p>
+          Knots sees the drift and tries to correct it, but only at the policy layer (mempool), not
+          consensus (block validity). Every rejection uses <code>TX_NOT_STANDARD</code>, never <code>TX_CONSENSUS</code>.
+          Knots doesn't fork. It just doesn't help relay what it considers spam.
+        </p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">
+        <span>Are Core devs trying to destroy Bitcoin from the inside?</span>
+        <span class="arrow">&#x25BE;</span>
+      </div>
+      <div class="faq-a">
+        <p>
+          <strong>No.</strong> That's civil war drama. The code evidence doesn't support it.
+        </p>
+        <p>
+          Every decision had a legitimate engineering reason. SegWit's discount was needed for
+          malleability fix adoption. Taproot's script size exemption was for future extensibility.
+          Unknown leaf version acceptance is standard protocol engineering for forward compatibility.
+        </p>
+        <p>The fair criticism isn't "they're destroying Bitcoin." It's:</p>
+        <p><strong>"They optimized for protocol evolution and didn't constrain for misuse."</strong></p>
+        <p>
+          They built a highway on-ramp for future features and didn't put a weight limit on the vehicles.
+          Someone showed up with a convoy of dump trucks full of JPEGs. That's a design gap, not an attack.
+        </p>
+        <blockquote>
+          "Never attribute to malice what is adequately explained by compounding side effects
+          across three soft forks over four years."
+        </blockquote>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">
+        <span>Can inscriptions be stopped?</span>
+        <span class="arrow">&#x25BE;</span>
+      </div>
+      <div class="faq-a">
+        <p>
+          <strong>Technically yes. Politically, it depends.</strong>
+        </p>
+        <p>
+          A one-line soft fork adding <code>MAX_TAPSCRIPT_SIZE</code> would close the primary pathway.
+          This is technically trivial, consensus-compatible, and historically precedented. It is also
+          politically near-impossible today because miners benefit from inscription fees and the inscription
+          community frames any restriction as "censorship."
+        </p>
+        <p>
+          Policy-level filtering (Knots-style) works for individual nodes but can't prevent miners
+          from including inscriptions. Miners can receive transactions through private channels.
+        </p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">
+        <span>Why can't we just ban data storage on Bitcoin?</span>
+        <span class="arrow">&#x25BE;</span>
+      </div>
+      <div class="faq-a">
+        <p>
+          Because the security budget might depend on it. Inscriptions generate fees. Fees pay miners.
+          Miners provide security. As the subsidy halves toward zero, every revenue source matters.
+        </p>
+        <p>
+          The answer isn't banning data &mdash; it's <strong>pricing it fairly</strong>. Reduce the
+          witness discount from 4:1 to 2:1. Cap script sizes at 100KB. Make data pay its share without
+          eliminating it entirely. Banning the paying tenant because you don't like their furniture
+          doesn't help when you can't make rent.
+        </p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">
+        <span>What about the "inscriptions are free speech" argument?</span>
+        <span class="arrow">&#x25BE;</span>
+      </div>
+      <div class="faq-a">
+        <p>
+          Bitcoin is a protocol, not a constitution. Protocols have technical constraints.
+          The 40-byte OP_RETURN limit was always a constraint on what you could store. Nobody called that
+          "censorship" in 2009.
+        </p>
+        <p>
+          Setting <code>MAX_TAPSCRIPT_SIZE = 100KB</code> doesn't censor anything. It caps how much
+          data fits per script. You can still anchor data. You can still timestamp. You just can't
+          store 4MB JPEGs at a 75% discount. The free speech argument confuses
+          <em>access to a subsidized resource</em> with <em>a fundamental right</em>.
+        </p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">
+        <span>Is the Impossible Pentagon solvable?</span>
+        <span class="arrow">&#x25BE;</span>
+      </div>
+      <div class="faq-a">
+        <p>
+          Not fully. That's why it's called "impossible." You can't maximize all five properties simultaneously
+          without the subsidy acting as universal lubricant.
+        </p>
+        <p>
+          But you can reach <strong>equilibrium</strong> &mdash; a configuration where everyone gets enough, even if
+          nobody gets everything. The six compromises in this research map out one viable equilibrium point.
+          There may be others. The important thing is that <em>someone designs one</em>, because the current plan
+          is no plan at all.
+        </p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">
+        <span>What does PFM stand for?</span>
+        <span class="arrow">&#x25BE;</span>
+      </div>
+      <div class="faq-a">
+        <p>
+          <strong>Pure Fucking Magic.</strong>
+        </p>
+        <p>
+          PFM is a section-based document container with cryptographic integrity, lazy I/O via byte-offset
+          indexes, and content-addressed deduplication. The checksum of a PFM document becomes its filename
+          in the L3 store and the value anchored to Bitcoin. Any modification to any section changes the
+          checksum, breaking the anchor chain.
+        </p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">
+        <span>Is Bitcoin L3 real code or just a whitepaper?</span>
+        <span class="arrow">&#x25BE;</span>
+      </div>
+      <div class="faq-a">
+        <p>
+          <strong>Real code.</strong> 18 CLI commands. 287 test functions. 276 passing. 4 rounds of adversarial
+          security testing. 43 security fixes. Zero critical or high vulnerabilities remaining.
+        </p>
+        <p>
+          Install it with <code>pip install -e .</code> and run <code>l3 store</code>,
+          <code>l3 anchor</code>, <code>l3 verify-anchor</code> today. It works on regtest,
+          testnet, and mainnet.
+        </p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">
+        <span>What is VeilCloud?</span>
+        <span class="arrow">&#x25BE;</span>
+      </div>
+      <div class="faq-a">
+        <p>
+          VeilCloud is the native privacy layer built into Bitcoin L3. It provides:
+        </p>
+        <ul style="padding-left:1.5rem;margin-bottom:1rem">
+          <li><strong>Client-side encryption</strong> &mdash; AES-256-GCM, so the network never sees plaintext</li>
+          <li><strong>Threshold key management</strong> &mdash; Shamir&rsquo;s Secret Sharing over GF(256). Split a key into
+            N shares, any T recover it, fewer reveal nothing</li>
+          <li><strong>Batch anchoring</strong> &mdash; Merkle trees let you anchor thousands of documents in a
+            single 36-byte OP_RETURN. Each document is independently provable via inclusion proof</li>
+          <li><strong>Audit trails</strong> &mdash; append-only hash-chained logs with Merkle proofs</li>
+          <li><strong>Access control</strong> &mdash; HMAC-signed credentials with permissions, expiry, and revocation</li>
+        </ul>
+        <p>
+          All pure Python. The only optional dependency is <code>cryptography</code> for the encryption
+          module. Everything else is stdlib.
+        </p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">
+        <span>What does it cost to anchor a document?</span>
+        <span class="arrow">&#x25BE;</span>
+      </div>
+      <div class="faq-a">
+        <p>
+          An OP_RETURN output adds ~44 vbytes. At 10 sat/vbyte, that&rsquo;s roughly
+          <strong>440 sats (~$0.40 at $100K/BTC)</strong> for a single document.
+        </p>
+        <p>
+          With batch anchoring via Merkle trees, you can anchor <strong>1,000 documents in one
+          transaction</strong> for the same 440 sats. Each document is independently provable via
+          its Merkle inclusion proof. That&rsquo;s less than 0.5 sats per document.
+        </p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">
+        <span>What is Bitcoin Finney?</span>
+        <span class="arrow">&#x25BE;</span>
+      </div>
+      <div class="faq-a">
+        <p>
+          A minimal Bitcoin node for L3 anchoring, named after
+          <a href="https://en.wikipedia.org/wiki/Hal_Finney_(computer_scientist)">Hal Finney</a>.
+          It&rsquo;s a stripped-down fork of Bitcoin Knots that retains only <code>bitcoind</code> and
+          <code>bitcoin-cli</code> with SQLite wallet support.
+        </p>
+        <p>
+          No GUI, no ZMQ, no Tor, no UPnP, no BDB wallets, no utility binaries, no test suites.
+          Two binaries. Full node. Full RPC. That&rsquo;s it.
+        </p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>
+      <span class="accent">&#x20bf;</span> Bitcoin Code Archaeology
+      &nbsp;&bull;&nbsp;
+      Built from 11 knowledge files, 4 codebases, and the code itself.
+    </p>
+    <p style="margin-top:0.5rem">
+      Source repos: core0.1 &bull; core22 &bull; core30 &bull; knots &bull; bitcoin-l3 &bull; finney
+      &nbsp;&bull;&nbsp;
+      The receipts don't lie.
+    </p>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>

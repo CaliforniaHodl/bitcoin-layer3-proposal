@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Framework &mdash; Bitcoin Code Archaeology</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <a href="index.html" class="logo">&#x20bf; CODE ARCHAEOLOGY</a>
+    <button class="nav-toggle" aria-label="Toggle navigation">&#9776;</button>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="parable.html">The Parable</a>
+      <a href="archaeology.html">Code Archaeology</a>
+      <a href="crisis.html">The Crisis</a>
+      <a href="framework.html" class="active">The Framework</a>
+      <a href="l3.html">Bitcoin L3</a>
+      <a href="faq.html">FAQ</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="container">
+    <h1>The Framework</h1>
+    <p class="subtitle">
+      The impossible pentagon, six compromises, and a post-subsidy architecture for Bitcoin.
+    </p>
+  </div>
+</div>
+
+<!-- ══════════════════ THE IMPOSSIBLE PENTAGON ══════════════════ -->
+<section id="pentagon">
+  <div class="container">
+    <h2>The Impossible Pentagon</h2>
+    <p>
+      Bitcoin needs five properties to fulfill its promise. Today, the subsidy pays for all five simultaneously.
+      Post-subsidy, they compete.
+      <strong>"Pick any three. You can't have all five."</strong>
+    </p>
+
+    <!-- SVG Pentagon -->
+    <div class="pentagon-container">
+      <svg class="pentagon-svg" viewBox="0 0 500 480" xmlns="http://www.w3.org/2000/svg">
+        <!-- Pentagon edges -->
+        <polygon points="250,40 462,194 381,430 119,430 38,194"
+          fill="none" stroke="#1e1e2e" stroke-width="1.5"/>
+        <!-- Inner tension lines (all 10 edges) -->
+        <line class="pentagon-edge" id="edge-0-1" x1="250" y1="40" x2="462" y2="194"/>
+        <line class="pentagon-edge" id="edge-0-2" x1="250" y1="40" x2="381" y2="430"/>
+        <line class="pentagon-edge" id="edge-0-3" x1="250" y1="40" x2="119" y2="430"/>
+        <line class="pentagon-edge" id="edge-0-4" x1="250" y1="40" x2="38" y2="194"/>
+        <line class="pentagon-edge" id="edge-1-2" x1="462" y1="194" x2="381" y2="430"/>
+        <line class="pentagon-edge" id="edge-1-3" x1="462" y1="194" x2="119" y2="430"/>
+        <line class="pentagon-edge" id="edge-1-4" x1="462" y1="194" x2="38" y2="194"/>
+        <line class="pentagon-edge" id="edge-2-3" x1="381" y1="430" x2="119" y2="430"/>
+        <line class="pentagon-edge" id="edge-2-4" x1="381" y1="430" x2="38" y2="194"/>
+        <line class="pentagon-edge" id="edge-3-4" x1="119" y1="430" x2="38" y2="194"/>
+        <!-- Vertices -->
+        <g class="pentagon-vertex" data-vertex="0" onclick="showVertex(0)">
+          <circle cx="250" cy="40" r="8" fill="#f7931a" stroke="#0a0a0f" stroke-width="2"/>
+          <text x="250" y="20" text-anchor="middle" fill="#eeeef2" font-family="sans-serif" font-size="13" font-weight="700">Security</text>
+        </g>
+        <g class="pentagon-vertex" data-vertex="1" onclick="showVertex(1)">
+          <circle cx="462" cy="194" r="8" fill="#f7931a" stroke="#0a0a0f" stroke-width="2"/>
+          <text x="497" y="198" text-anchor="start" fill="#eeeef2" font-family="sans-serif" font-size="13" font-weight="700">Sustainability</text>
+        </g>
+        <g class="pentagon-vertex" data-vertex="2" onclick="showVertex(2)">
+          <circle cx="381" cy="430" r="8" fill="#f7931a" stroke="#0a0a0f" stroke-width="2"/>
+          <text x="381" y="460" text-anchor="middle" fill="#eeeef2" font-family="sans-serif" font-size="13" font-weight="700">Accessibility</text>
+        </g>
+        <g class="pentagon-vertex" data-vertex="3" onclick="showVertex(3)">
+          <circle cx="119" cy="430" r="8" fill="#f7931a" stroke="#0a0a0f" stroke-width="2"/>
+          <text x="119" y="460" text-anchor="middle" fill="#eeeef2" font-family="sans-serif" font-size="13" font-weight="700">Decentralization</text>
+        </g>
+        <g class="pentagon-vertex" data-vertex="4" onclick="showVertex(4)">
+          <circle cx="38" cy="194" r="8" fill="#f7931a" stroke="#0a0a0f" stroke-width="2"/>
+          <text x="3" y="198" text-anchor="start" fill="#eeeef2" font-family="sans-serif" font-size="13" font-weight="700">Sovereignty</text>
+        </g>
+        <!-- Today vs 2036 indicators -->
+        <text x="250" y="240" text-anchor="middle" fill="#6e6e82" font-family="sans-serif" font-size="11">Click a vertex to explore tensions</text>
+      </svg>
+
+      <div class="pentagon-info" id="pentagon-info">
+        <h4>Ten Tensions, Five Vertices</h4>
+        <p>Every pair of vertices creates a tension. You can't maximize both sides. The subsidy masked all five tensions simultaneously. As it disappears, every tension activates at once.</p>
+      </div>
+    </div>
+
+    <!-- Status bars: Today vs 2036 -->
+    <h3>Where We Are vs Where We're Going</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Property</th><th>Today (2025)</th><th>Post-Subsidy (2036)</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Security</td>
+            <td style="color:var(--green)">HIGH &mdash; subsidy covers</td>
+            <td style="color:var(--yellow)">UNKNOWN &mdash; fee-dependent</td>
+          </tr>
+          <tr>
+            <td>Decentralization</td>
+            <td style="color:var(--yellow)">MEDIUM &mdash; growing chain</td>
+            <td style="color:var(--red)">DECLINING &mdash; cost pressure</td>
+          </tr>
+          <tr>
+            <td>Accessibility</td>
+            <td style="color:var(--red)">LOW &mdash; fee spikes</td>
+            <td style="color:var(--red)">CRITICAL &mdash; AI competition</td>
+          </tr>
+          <tr>
+            <td>Sovereignty</td>
+            <td style="color:var(--yellow)">MEDIUM &mdash; mining concentration</td>
+            <td style="color:var(--red)">AT RISK &mdash; state capture window</td>
+          </tr>
+          <tr>
+            <td>Sustainability</td>
+            <td style="color:var(--red)">POOR &mdash; subsidy-dependent</td>
+            <td style="color:var(--red)">UNDESIGNED &mdash; blank page</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ THE EQUILIBRIUM ══════════════════ -->
+<section id="equilibrium">
+  <div class="container">
+    <h2>The Equilibrium: Post-Subsidy Architecture</h2>
+    <p>
+      The impossible pentagon means accepting tradeoffs. Here's where to set each dial, and what it costs.
+    </p>
+
+    <h3>Six Compromises</h3>
+    <div class="compromise-grid">
+      <div class="compromise-card">
+        <div class="number">COMPROMISE 1</div>
+        <h4>Accept That L1 Is Not For Daily Coffee</h4>
+        <p class="tradeoff">
+          <span class="give-up">Give up:</span> Full accessibility for small transactions on L1.<br>
+          <span class="gain">Gain:</span> Block space preserved for high-value settlement, sustainable fee rates.
+        </p>
+        <p style="font-size:0.88rem;margin-top:0.5rem">L2 must remain non-custodial or you've just rebuilt banks.</p>
+      </div>
+      <div class="compromise-card">
+        <div class="number">COMPROMISE 2</div>
+        <h4>Move Data Off L1 by Making L3 Better</h4>
+        <p class="tradeoff">
+          <span class="give-up">Give up:</span> The idea that you can legislate inscriptions away.<br>
+          <span class="gain">Gain:</span> Data moves off-chain because L3 is cheaper, faster, and more capable. No fork needed.
+        </p>
+        <p style="font-size:0.88rem;margin-top:0.5rem">36-byte anchors on L1, full data on L3. Win on economics, not politics.</p>
+      </div>
+      <div class="compromise-card">
+        <div class="number">COMPROMISE 3</div>
+        <h4>Accept That Inscriptions Die From Irrelevance, Not Restriction</h4>
+        <p class="tradeoff">
+          <span class="give-up">Give up:</span> The moral crusade against inscriptions.<br>
+          <span class="gain">Gain:</span> A migration path that data users actually want to take.
+        </p>
+        <p style="font-size:0.88rem;margin-top:0.5rem">L3 offers larger files, updateable metadata, search, collections &mdash; things L1 can never do.</p>
+      </div>
+      <div class="compromise-card">
+        <div class="number">COMPROMISE 4</div>
+        <h4>Build a Node Incentive (The Missing Business Model)</h4>
+        <p class="tradeoff">
+          <span class="give-up">Give up:</span> The fiction that nodes run on altruism.<br>
+          <span class="gain">Gain:</span> Sustainable node operation, maintained decentralization.
+        </p>
+        <p style="font-size:0.88rem;margin-top:0.5rem">Pragmatic order: reduce costs (Utreexo) &rarr; formalize market (relay services) &rarr; protocol payment (last resort).</p>
+      </div>
+      <div class="compromise-card">
+        <div class="number">COMPROMISE 5</div>
+        <h4>Design for AI Coexistence, Not Exclusion</h4>
+        <p class="tradeoff">
+          <span class="give-up">Give up:</span> The idea that Bitcoin is humans-only.<br>
+          <span class="gain">Gain:</span> A fee market that works when machines show up.
+        </p>
+        <p style="font-size:0.88rem;margin-top:0.5rem">Reserved block space for simple transfers. Progressive fee curves. Time-weighted priority.</p>
+      </div>
+      <div class="compromise-card">
+        <div class="number">COMPROMISE 6</div>
+        <h4>Accept the Sovereignty Ceiling</h4>
+        <p class="tradeoff">
+          <span class="give-up">Give up:</span> Belief that Bitcoin resists all nation states simultaneously.<br>
+          <span class="gain">Gain:</span> Realistic defense design: resilience over invulnerability.
+        </p>
+        <p style="font-size:0.88rem;margin-top:0.5rem">Target: resist any single nation. Mining across 10+ jurisdictions. No pool > 25%.</p>
+      </div>
+    </div>
+
+    <h3>The Math Check</h3>
+    <div class="code-block">
+      <div class="code-header"><span>Post-Subsidy Revenue Model</span><span class="lang">Estimate</span></div>
+      <pre><code><span class="cm">Target: $3B/year security budget = $5,700/block</span>
+
+<span class="ty">Sources (conservative):</span>
+├── Value transfers:  ~2,000 txs/block &times; $1.50 avg   = <span class="num">$3,000</span>/block
+├── L2 settlements:   ~200 channel ops/block &times; $5     = <span class="num">$1,000</span>/block
+├── Data anchoring:   ~500 anchors/block &times; $2         = <span class="num">$1,000</span>/block
+├── AI open market:   remaining space &times; market rate    = <span class="num">$1,000+</span>/block
+└── <span class="accent">Total: ~$6,000/block = ~$3.15B/year               &#10003; VIABLE</span></code></pre>
+    </div>
+
+    <h3>The Post-Subsidy Architecture</h3>
+    <div class="code-block">
+      <div class="code-header"><span>Three-Layer Design</span><span class="lang">Architecture</span></div>
+      <pre><code><span class="ty">Layer 1: Settlement + Anchor</span>
+├── Sound money transactions + 36-byte data anchors
+├── Revenue: value fees + anchor fees + AI premium + L2 fees
+├── <span class="accent">No consensus changes required</span>
+└── Target: <span class="accent">$3-5B/year security budget</span>
+
+<span class="ty">Layer 2: Human Transaction Layer</span>
+├── Lightning Network (payments)
+├── Ark / other non-custodial protocols
+├── <span class="red">Critical: NON-CUSTODIAL exit to L1 must always exist</span>
+└── This is where humans live day-to-day
+
+<span class="ty">Layer 3: Data + Application Layer</span>
+├── Anchoring protocol (commit hash on L1, store data off-chain)
+├── AI agent coordination layer
+├── Inscription migration target
+└── Bitcoin's security without Bitcoin's block space</code></pre>
+    </div>
+
+    <h3>Implementation Sequence</h3>
+    <div class="phase-grid">
+      <div class="phase-card">
+        <div class="phase-label">PHASE 1: Now &ndash; 2026 &bull; Build</div>
+        <h4 style="color:var(--green)">Ship L3</h4>
+        <ul>
+          <li>L3 working code: anchoring protocol, P2P network, CLI tools</li>
+          <li>Node optimization contributions (pruning, Utreexo research)</li>
+          <li>Education: Pentagon framework, post-subsidy modeling</li>
+          <li>Fee market research: Model the numbers. Verify or falsify.</li>
+        </ul>
+      </div>
+      <div class="phase-card">
+        <div class="phase-label">PHASE 2: 2026 &ndash; 2028 &bull; Grow</div>
+        <h4 style="color:var(--yellow)">Win on Economics</h4>
+        <ul>
+          <li>Make L3 10x cheaper and better than L1 inscriptions</li>
+          <li>Creator tools, galleries, search/discovery on L3</li>
+          <li>Batch anchoring (Merkle trees, many docs per tx)</li>
+          <li>Adoption: make "anchored to Bitcoin" the standard</li>
+        </ul>
+      </div>
+      <div class="phase-card">
+        <div class="phase-label">PHASE 3: 2028 &ndash; 2032 &bull; Scale</div>
+        <h4 style="color:var(--accent)">Deploy at Scale</h4>
+        <ul>
+          <li>Subsidy drops to 0.78 BTC/block. Pressure becomes undeniable.</li>
+          <li>L3 anchoring at scale (migration path for data users)</li>
+          <li>Anchor fees become meaningful part of miner revenue</li>
+          <li>Inscriptions decline from economic irrelevance, not restriction</li>
+        </ul>
+      </div>
+      <div class="phase-card">
+        <div class="phase-label">PHASE 4: 2032 &ndash; 2036 &bull; The Test</div>
+        <h4 style="color:var(--red)">Subsidy ~0. Does It Work?</h4>
+        <ul>
+          <li>Does the fee market sustain $3B+/year?</li>
+          <li>Is mining still distributed across 10+ jurisdictions?</li>
+          <li>Can humans still access L1 for settlement?</li>
+          <li>If yes: Bitcoin survives as sound money for humans.</li>
+          <li>If no: back to the pentagon. Adjust the dials.</li>
+        </ul>
+      </div>
+    </div>
+
+    <blockquote>
+      There is no solution where everyone gets everything.
+      There is a solution where everyone gets enough.
+      The difference between those two sentences is the difference between ideology and engineering.
+      <strong>Bitcoin was built by an engineer. It should be saved by engineering, not by winning an argument.</strong>
+    </blockquote>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>
+      <span class="accent">&#x20bf;</span> Bitcoin Code Archaeology
+      &nbsp;&bull;&nbsp;
+      Built from 11 knowledge files, 4 codebases, and the code itself.
+    </p>
+    <p style="margin-top:0.5rem">
+      Source repos: core0.1 &bull; core22 &bull; core30 &bull; knots
+      &nbsp;&bull;&nbsp;
+      The receipts don't lie.
+    </p>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>
