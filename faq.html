@@ -93,17 +93,22 @@
       </div>
       <div class="faq-a">
         <p>
-          <strong>Technically yes. Politically, it depends.</strong>
+          <strong>Wrong question.</strong> The right question is: can inscriptions be made irrelevant?
         </p>
         <p>
-          A one-line soft fork adding <code>MAX_TAPSCRIPT_SIZE</code> would close the primary pathway.
-          This is technically trivial, consensus-compatible, and historically precedented. It is also
-          politically near-impossible today because miners benefit from inscription fees and the inscription
-          community frames any restriction as "censorship."
+          Bitcoin L3 anchors documents to L1 using a 36-byte OP_RETURN &mdash; not by stuffing 4 MB JPEGs
+          into witness data. Same proof of existence. Same immutability. 10,000x less chain bloat.
+          With batch anchoring via Merkle trees, you can anchor 1,000 documents in a single transaction
+          for ~440 sats total.
         </p>
         <p>
-          Policy-level filtering (Knots-style) works for individual nodes but can't prevent miners
-          from including inscriptions. Miners can receive transactions through private channels.
+          The political fight over <code>MAX_TAPSCRIPT_SIZE</code> or witness discounts doesn't need to be
+          won if L3 makes inscriptions look expensive and stupid by comparison. Make the alternative so
+          obviously better that inscriptions die from irrelevance, not restriction.
+        </p>
+        <p>
+          Policy-level filtering (Knots-style) still works for individual nodes. But the real fix isn't
+          banning data from L1 &mdash; it's building a proper place for it on L3.
         </p>
       </div>
     </div>
@@ -119,10 +124,15 @@
           Miners provide security. As the subsidy halves toward zero, every revenue source matters.
         </p>
         <p>
-          The answer isn't banning data &mdash; it's <strong>pricing it fairly</strong>. Reduce the
-          witness discount from 4:1 to 2:1. Cap script sizes at 100KB. Make data pay its share without
-          eliminating it entirely. Banning the paying tenant because you don't like their furniture
-          doesn't help when you can't make rent.
+          The answer isn't banning data &mdash; it's <strong>moving it off-chain</strong>. L3 anchoring
+          still generates fee revenue (every anchor is a transaction), but each anchor is 36 bytes instead of
+          4 MB. Miners still get paid. Full nodes don't store everyone's JPEGs. Data users get better
+          tooling &mdash; encryption, batch anchoring, P2P distribution, content policies.
+        </p>
+        <p>
+          Fair pricing helps too: reduce the witness discount from 4:1 to 2:1, cap script sizes at 100KB.
+          But even without L1 changes, L3 makes the economics obvious. Why pay for 4 MB of witness space
+          when 36 bytes does the same job?
         </p>
       </div>
     </div>
